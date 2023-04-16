@@ -1,6 +1,6 @@
 import ast
 
-with open('./buggy_script.py') as f:
+with open('./example01.py') as f:
     source = ''.join(f.readlines())
 
 
@@ -16,7 +16,7 @@ class MinimalExtractor(ast.NodeVisitor):
         self.bad_context = bad_context
 
     def extract(self, isname=False):
-        visited_nodes = self.generic_visit(self.source_node)
+        visited_nodes = self.generic_visit(self.source_node, init=True)
         extracted_definitions = []
         for required in self.required_context:
             extracted = NameExtractor(self.source_node, required).extract()
@@ -68,11 +68,14 @@ class MinimalExtractor(ast.NodeVisitor):
         self.generic_visit(node)
         return node
 
-    def generic_visit(self, node):
+    def generic_visit(self, node, init=False):
         child_nodes = ast.iter_child_nodes(node)
         visited_nodes = []
 
         for child_node in child_nodes:
+            if init and not isinstance(child_node, ast.FunctionDef):
+                continue
+
             visited = self.visit(child_node)
             if isinstance(visited, ast.AST):
                 visited_nodes.append(visited)
