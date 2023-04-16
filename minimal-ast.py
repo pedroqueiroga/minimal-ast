@@ -1,6 +1,6 @@
 import ast
 
-with open('../../wolverine/buggy_script.py') as f:
+with open('./buggy_script.py') as f:
     source = ''.join(f.readlines())
 
 
